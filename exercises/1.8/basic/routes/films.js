@@ -1,7 +1,8 @@
-var express = require('express');
+const express = require('express');
 const { serialize, parse } = require('../utils/json');
-var router = express.Router();
-const jsonDbPath = __dirname + '/../data/films.json';
+
+const router = express.Router();
+const jsonDbPath = `${__dirname  }/../data/films.json`;
 
 const FILMS = [
   {
@@ -50,7 +51,7 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
   const films = parse(jsonDbPath, FILMS);
 
-  const indexOfFilmFound = films.findIndex((film) => film.id == req.params.id);
+  const indexOfFilmFound = films.findIndex((film) => film.id === req.params.id);
 
   if (indexOfFilmFound < 0) return res.sendStatus(404); // bad practise (will be improved in exercise 1.5)
 
@@ -60,41 +61,43 @@ router.get('/:id', (req, res) => {
 // Create a film
 router.post('/', (req, res) => {
   const title =
-    req?.body?.title?.trim()?.length !== 0 ? req.body.title : undefined; //si le la valeur recuperer nest pas vide le titre prend sa valeur sinon undefined
+    req?.body?.title?.trim()?.length !== 0 ? req.body.title : undefined; // si le la valeur recuperer nest pas vide le titre prend sa valeur sinon undefined
   const link =
-    req?.body?.content?.trim().length !== 0 ? req.body.link : undefined; //si le la valeur recuperer nest pas vide le titre prend sa valeur sinon undefined
+    req?.body?.content?.trim().length !== 0 ? req.body.link : undefined; // si le la valeur recuperer nest pas vide le titre prend sa valeur sinon undefined
   const duration =
-    typeof req?.body?.duration !== 'number' || req.body.duration < 0 //on regarde le type de la duration recuperer si ce n'est pas un nombre ou bien si la duration est negative on lui donne la valeur undefineted
+    typeof req?.body?.duration !== 'number' || req.body.duration < 0 // on regarde le type de la duration recuperer si ce n'est pas un nombre ou bien si la duration est negative on lui donne la valeur undefineted
       ? undefined
       : req.body.duration;
   const budget =
-    typeof req?.body?.budget !== 'number' || req.body.budget < 0 //on regarde le type de la duration recuperer si ce n'est pas un nombre ou bien si la duration est negative on lui donne la valeur undefineted
+    typeof req?.body?.budget !== 'number' || req.body.budget < 0 // on regarde le type de la duration recuperer si ce n'est pas un nombre ou bien si la duration est negative on lui donne la valeur undefineted
       ? undefined
       : req.body.budget;
 
   if (!title || !link || !duration || !budget) return res.sendStatus(400); // bad practise (will be improved in exercise 1.5) //verification de toutes les variables, si une des variables nest pas bonne on renvoie erreur 400
 
   const films = parse(jsonDbPath,FILMS);
-  const lastItemIndex = films?.length !== 0 ? films.length - 1 : undefined; //recherche de l'indice le plus grand de la table
+  const lastItemIndex = films?.length !== 0 ? films.length - 1 : undefined; // recherche de l'indice le plus grand de la table
   const lastId = lastItemIndex !== undefined ? films[lastItemIndex]?.id : 0;
   const nextId = lastId + 1;
 
-  const newFilm = { id: nextId, title, link, duration, budget }; //creation dun nouveau film
+  const newFilm = { id: nextId, title, link, duration, budget }; // creation dun nouveau film
 
-  films.push(newFilm); //ajout du nouveasu film
+  films.push(newFilm); // ajout du nouveasu film
 
   serialize(jsonDbPath,FILMS);
 
-  return res.json(newFilm); //affichage du nouveau film
+  return res.json(newFilm); // affichage du nouveau film
 });
 
 
+// eslint-disable-next-line consistent-return
 router.delete('/:id', (req,res) =>{
+  // eslint-disable-next-line no-template-curly-in-string
   console.log('delete /films/${req.params.id}');
 
   const films = parse(jsonDbPath,FILMS);
 
-  const indexFound = films.findIndex(film => film.id == req.params.id);
+  const indexFound = films.findIndex(film => film.id === req.params.id);
 
   if (indexFound<0) return res.sendStatus(404);
 
@@ -126,7 +129,7 @@ router.patch('/:id', (req,res)=>{
 
 
   const films = parse(jsonDbPath,FILMS);
-  const foundIndex = films.findIndex((film) => film.id == req.params.id);
+  const foundIndex = films.findIndex((film) => film.id === req.params.id);
   if (foundIndex<0) return res.sendStatus(404);
 
   const filmPriorChange = films[foundIndex];
@@ -143,7 +146,7 @@ router.patch('/:id', (req,res)=>{
 
 
 
-router.put('/:id', function (req, res) {
+router.put('/:id', (req, res) => {
   const title = req?.body?.title;
   const link = req?.body?.link;
   const duration = req?.body?.duration;
@@ -165,8 +168,8 @@ router.put('/:id', function (req, res) {
     return res.sendStatus(400);
 
   const films = parse(jsonDbPath,FILMS);
-  const id = req.params.id;
-  const indexOfFilmFound = films.findIndex((film) => film.id == id);
+  const {id} = req.params;
+  const indexOfFilmFound = films.findIndex((film) => film.id === id);
 
   if (indexOfFilmFound < 0) {
     const newFilm = { id, title, link, duration, budget };
